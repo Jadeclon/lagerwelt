@@ -1,5 +1,7 @@
 const express = require('express');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const app = express();
 const cors = require('cors');
 const mysql = require('mysql');
@@ -14,11 +16,28 @@ const db = mysql.createPool({
       host: process.env.DB_HOST,
 });
 
-app.use(cors());
+app.use(cors({
+      origin: ["http://localhost:3000"],
+      methods: ["GET", "POST", "PUT"],
+      credentials: true
+}));
 app.use(express.json());
 app.use(
       express.urlencoded({
             extended: true
+      })
+);
+app.use(cookieParser());
+// app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(session({
+            key: "userId",
+            secret: "important",
+            resave: false,
+            saveUninitialized: false,
+            cookie: {
+                  expires: 3600000,
+            },
       })
 );
 
@@ -48,6 +67,40 @@ app.post('/api/insert', (req, res) => {
 });
 
 
+app.post('/login', (req, res) => {
+      const username = req.body.username;
+      const password = req.body.password;
+
+      db.query("SELECT * FROM benutzer WHERE user = ?",
+            [username], (err, result) => {
+
+                  if(err) { console.log }
+
+                  if(result.length > 0) {
+                        if(password === result[0].password) {
+                              req.session.user = result;
+                              console.log(req.session.user);
+                              res.send("Logged in successfully!");
+                        } else {
+                              res.send("Wrong username/password combination!");
+                        }
+                  } else {
+                        res.send("Wrong username/password combination!");
+                  }
+            }
+      );
+});
+
+
+app.get("/login", (req, res) => {
+      if(req.session.user) {
+            res.send({ loggedIn: true, user: req.session.user });
+      } else {
+            res.send({ loggedIn: false });
+      }
+});
+
+
 app.delete('/api/delete/:articleId', (req, res) => {
       const articleId = req.params.articleId;
       const sql = `DELETE FROM articles WHERE articleId = ?`;
@@ -61,7 +114,7 @@ app.delete('/api/delete/:articleId', (req, res) => {
 });
 
 
-app.put('/api/update', (req, res) => {
+app.put('/api/updateQuantity', async (req, res) => {
       const articleId = req.body.articleId;
       const quantity = req.body.quantity;
       const sql = `UPDATE articles SET quantity = ? WHERE articleId = ?`;
@@ -71,6 +124,19 @@ app.put('/api/update', (req, res) => {
       db.query(sql, [quantity, articleId], (err, result) => {
             console.log("Sucessfully updated!");
             if (err) console.log(err);
+      });
+});
+
+app.put('/api/update', async (req, res) => {
+      const article = req.body.article;
+      const sql = `UPDATE articles SET articleNumber = ?, storagePlace = ?, manufacturer = ? WHERE articleId = ?`;
+      
+      console.log("Updating " + article.articleNumber);
+
+      db.query(sql, [article.articleNumber, article.storagePlace, article.manufacturer, article.articleId], (err, result) => {
+            if (err) console.log(err);
+
+            // res.send("Sucessfully updated " + article.articleNumber);
       });
 });
 
