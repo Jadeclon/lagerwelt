@@ -44,7 +44,7 @@ app.use(session({
 
 
 app.get('/api/get', (req, res) => {
-      const sql = `SELECT * FROM artikel`;
+      const sql = `SELECT * FROM articles`;
 
       db.query(sql, (err, result) => {
             res.send(result);
@@ -104,7 +104,7 @@ app.get("/login", (req, res) => {
 
 app.delete('/api/delete/:articleId', (req, res) => {
       const articleId = req.params.articleId;
-      const sql = `DELETE FROM artikel WHERE artikel_Id = ?`;
+      const sql = `DELETE FROM articles WHERE articleId = ?`;
 
       db.query(sql, articleId, (err, result) => {
             console.log("Sucessfully deleted!");
@@ -118,7 +118,7 @@ app.delete('/api/delete/:articleId', (req, res) => {
 app.put('/api/updateQuantity', async (req, res) => {
       const articleId = req.body.articleId;
       const quantity = req.body.quantity;
-      const sql = `UPDATE artikel SET Anzahl = ? WHERE artikel_Id = ?`;
+      const sql = `UPDATE articles SET quantity = ? WHERE articleId = ?`;
       
       console.log("articleId: " + articleId);
 
