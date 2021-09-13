@@ -118,7 +118,7 @@ app.delete('/api/delete/:articleId', (req, res) => {
 app.put('/api/updateQuantity', async (req, res) => {
       const articleId = req.body.articleId;
       const quantity = req.body.quantity;
-      const sql = `UPDATE articles SET Anzahl = ? WHERE artikel_Id = ?`;
+      const sql = `UPDATE artikel SET Anzahl = ? WHERE artikel_Id = ?`;
       
       console.log("articleId: " + articleId);
 
