@@ -8,6 +8,9 @@ const mysql = require('mysql');
 require('dotenv').config();
 
 
+var loggedIn = false;
+
+
 
 const db = mysql.createPool({
       user: process.env.DB_USER,
@@ -16,9 +19,11 @@ const db = mysql.createPool({
       host: process.env.DB_HOST,
 });
 
+
+
 app.use(cors({
-      origin: ["https://lagerwelt3000.netlify.app"],
-      // origin: ["http://localhost:3000"],
+      // origin: ["https://lagerwelt3000.netlify.app"],
+      origin: ["http://localhost:3000"],
       methods: ["GET", "POST", "PUT"],
       credentials: true
 }));
@@ -44,6 +49,7 @@ app.use(session({
 
 
 app.get('/api/get', (req, res) => {
+      if(loggedIn == false) return res.send("You are not logged in!");
       const sql = `SELECT * FROM articles`;
 
       db.query(sql, (err, result) => {
@@ -52,17 +58,31 @@ app.get('/api/get', (req, res) => {
 });
 
 
+app.get('/api/get/:articleId', (req, res) => {
+      if(loggedIn == false) return res.send("You are not logged in!");
+
+      const articleId = req.params.articleId;
+      const sql = `SELECT * FROM articles WHERE articleId = ?`;
+
+      db.query(sql, [articleId], (err, result) => {
+            res.send(result);
+      });
+});
+
+
 app.post('/api/insert', (req, res) => {
+      if(loggedIn == false) return res.send("You are not logged in!");
 
       const title = req.body.title;
       const description = req.body.description;
       const sql = `INSERT INTO posts (title, body) VALUES (?,?)`;
 
       db.query(sql, [title, description], (err, result) => {
-            console.log("Sucessfully inserted!");
-            console.log(result);
 
             if (err) console.log(err);
+
+            console.log("Sucessfully inserted!");
+            console.log(result);           
       });
      
 });
@@ -80,8 +100,11 @@ app.post('/login', (req, res) => {
                   if(result.length > 0) {
                         if(password === result[0].password) {
                               req.session.user = result;
-                              console.log(req.session.user);
-                              res.send("Logged in successfully!");
+                              req.session.user[0].password = "looser";
+                              // console.log(req.session.user[0]);
+                              loggedIn = true;
+                              res.send({ msg: "Logged in successfully!", loggedIn: true, user: req.session.user[0] });
+                              // res.send("Logged in successfully!");
                         } else {
                               res.send("Wrong username/password combination!");
                         }
@@ -95,7 +118,8 @@ app.post('/login', (req, res) => {
 
 app.get("/login", (req, res) => {
       if(req.session.user) {
-            res.send({ loggedIn: true, user: req.session.user });
+            loggedIn = true;
+            res.send({ loggedIn: true, user: req.session.user[0] });
       } else {
             res.send({ loggedIn: false });
       }
@@ -103,6 +127,8 @@ app.get("/login", (req, res) => {
 
 
 app.delete('/api/delete/:articleId', (req, res) => {
+      if(loggedIn == false) return res.send("You are not logged in!");
+
       const articleId = req.params.articleId;
       const sql = `DELETE FROM articles WHERE articleId = ?`;
 
@@ -116,6 +142,8 @@ app.delete('/api/delete/:articleId', (req, res) => {
 
 
 app.put('/api/updateQuantity', async (req, res) => {
+      // if(loggedIn == false) return res.send("You are not logged in!");
+
       const articleId = req.body.articleId;
       const quantity = req.body.quantity;
       const sql = `UPDATE articles SET quantity = ? WHERE articleId = ?`;
@@ -123,21 +151,27 @@ app.put('/api/updateQuantity', async (req, res) => {
       console.log("articleId: " + articleId);
 
       db.query(sql, [quantity, articleId], (err, result) => {
-            console.log("Sucessfully updated!");
+            
             if (err) console.log(err);
+
+            // console.log(result);
+
+            res.send("Sucessfully updated!");
       });
 });
 
 app.put('/api/update', async (req, res) => {
+      if(loggedIn == false) return res.send("You are not logged in!");
+
       const article = req.body.article;
-      const sql = `UPDATE articles SET articleNumber = ?, storagePlace = ?, manufacturer = ? WHERE articleId = ?`;
+      const sql = `UPDATE articles SET articleNumber = ?, storagePlace = ?, manufacturer = ?, quantity = ? WHERE articleId = ?`;
       
       console.log("Updating " + article.articleNumber);
 
-      db.query(sql, [article.articleNumber, article.storagePlace, article.manufacturer, article.articleId], (err, result) => {
+      db.query(sql, [article.articleNumber, article.storagePlace, article.manufacturer, article.quantity, article.articleId], (err, result) => {
             if (err) console.log(err);
 
-            // res.send("Sucessfully updated " + article.articleNumber);
+            res.send("Sucessfully updated " + article.articleNumber);
       });
 });
 
