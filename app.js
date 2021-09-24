@@ -22,8 +22,8 @@ const db = mysql.createPool({
 
 
 app.use(cors({
-      // origin: ["https://lagerwelt3000.netlify.app"],
-      origin: ["http://localhost:3000"],
+      origin: ["https://lagerwelt3000.netlify.app"],
+      // origin: ["http://localhost:3000"],
       methods: ["GET", "POST", "PUT"],
       credentials: true
 }));
