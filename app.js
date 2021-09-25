@@ -41,13 +41,13 @@ app.set('trust proxy', 1)
 app.use(session({
             key: "lagerwelt_userId",
             secret: "important",
-            resave: true,
-            saveUninitialized: true,
-            sameSite: 'none',
+            resave: false,
+            saveUninitialized: false,
             cookie: {
                   path: "/",
+                  sameSite: true,
                   httpOnly: true,
-                  secure: true,
+                  secure: false,
                   expires: 3600000,
             },
       })
