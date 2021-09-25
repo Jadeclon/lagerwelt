@@ -48,7 +48,7 @@ app.use(session({
                   sameSite: true,
                   httpOnly: true,
                   secure: false,
-                  expires: 3600000,
+                  maxAge: 3600000,
             },
       })
 );
