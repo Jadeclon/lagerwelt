@@ -43,9 +43,9 @@ app.use(session({
             saveUninitialized: true,
             sameSite: 'none',
             httpOnly: true,
-            secure: true,
             path: "/",
             cookie: {
+                  secure: true,
                   expires: 3600000,
             },
       })
