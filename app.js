@@ -36,6 +36,8 @@ app.use(
 app.use(cookieParser());
 // app.use(bodyParser.urlencoded({ extended: true }));
 
+
+app.set('trust proxy', 1)
 app.use(session({
             key: "lagerwelt_userId",
             secret: "important",
@@ -181,5 +183,5 @@ app.put('/api/update', async (req, res) => {
 
 
 app.listen(process.env.PORT || 5000, () => {
-      console.log(`Running on port ${process.env.PORT}...`);
+      console.log(`Running on port ${process.env.PORT || 5000}...`);
 });
