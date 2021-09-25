@@ -37,7 +37,7 @@ app.use(cookieParser());
 // app.use(bodyParser.urlencoded({ extended: true }));
 
 
-app.set('trust proxy', 1)
+app.set('trust proxy', true)
 app.use(session({
             key: "lagerwelt_userId",
             secret: "important",
