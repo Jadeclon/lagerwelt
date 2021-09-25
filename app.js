@@ -39,12 +39,12 @@ app.use(cookieParser());
 app.use(session({
             key: "lagerwelt_userId",
             secret: "important",
-            resave: false,
+            resave: true,
             saveUninitialized: true,
             sameSite: 'none',
-            httpOnly: true,
-            path: "/",
             cookie: {
+                  path: "/",
+                  httpOnly: true,
                   secure: true,
                   expires: 3600000,
             },
