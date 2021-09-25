@@ -37,10 +37,11 @@ app.use(cookieParser());
 // app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(session({
-            key: "userId",
+            key: "lagerwelt_userId",
             secret: "important",
             resave: false,
             saveUninitialized: false,
+            sameSite: 'none',
             cookie: {
                   expires: 3600000,
             },
@@ -106,10 +107,10 @@ app.post('/login', (req, res) => {
                               res.send({ msg: "Logged in successfully!", loggedIn: true, user: req.session.user[0] });
                               // res.send("Logged in successfully!");
                         } else {
-                              res.send("Wrong username/password combination!");
+                              res.send({ msg: "Wrong username/password combination!"});
                         }
                   } else {
-                        res.send("Wrong username/password combination!");
+                        res.send({ msg: "Wrong username/password combination!"});
                   }
             }
       );
