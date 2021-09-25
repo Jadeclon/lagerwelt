@@ -40,10 +40,11 @@ app.use(session({
             key: "lagerwelt_userId",
             secret: "important",
             resave: false,
-            saveUninitialized: false,
+            saveUninitialized: true,
             sameSite: 'none',
             httpOnly: true,
             secure: true,
+            path: "/",
             cookie: {
                   expires: 3600000,
             },
