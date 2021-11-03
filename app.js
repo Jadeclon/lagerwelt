@@ -56,6 +56,7 @@ app.use(session({
 
 app.get('/api/get', (req, res) => {
       if(loggedIn == false) return res.send("You are not logged in!");
+      
       const sql = `SELECT * FROM articles`;
 
       db.query(sql, (err, result) => {
@@ -170,12 +171,40 @@ app.put('/api/update', async (req, res) => {
       if(loggedIn == false) return res.send("You are not logged in!");
 
       const article = req.body.article;
-      const sql = `UPDATE articles SET articleNumber = ?, storagePlace = ?, manufacturer = ?, quantity = ? WHERE articleId = ?`;
+      const sql = `UPDATE articles SET
+                                          articleNumber = ?,
+                                          oe = ?,
+                                          storagePlace = ?,
+                                          manufacturer = ?,
+                                          quantity = ?,
+                                          power = ?,
+                                          brand = ?,
+                                          ebayPlus = ?,
+                                          Grooves = ?,
+                                          Diameter = ?,
+                                          Volt = ?,
+                                          URL = ? WHERE articleId = ?`;
       
       console.log("Updating " + article.articleNumber);
 
-      db.query(sql, [article.articleNumber, article.storagePlace, article.manufacturer, article.quantity, article.articleId], (err, result) => {
+      db.query(sql, [
+                        article.articleNumber,
+                        article.oe,
+                        article.storagePlace,
+                        article.manufacturer,
+                        article.quantity,
+                        article.power,
+                        article.brand,
+                        article.ebayPlus,
+                        article.Grooves,
+                        article.Diameter,
+                        article.Volt,
+                        article.URL,
+                        article.articleId
+                  ], (err, result) => {
             if (err) console.log(err);
+
+            console.log(result);
 
             res.send("Sucessfully updated " + article.articleNumber);
       });
